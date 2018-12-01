@@ -1,0 +1,120 @@
+<title>Task List</title>
+
+<header>
+  <h1>//TODO</h1>
+  <input type='text' id='newItem' placeholder='New Item...'>
+  <button type='submit' onclick='add()'>Add</button>
+</header>
+
+<ul id='list'></ul>
+
+<footer>
+  <button onclick='clearCompleted()'>Clear Completed</button>
+</footer>
+
+<script>
+  let e = function (el) {
+    return document.createElement(el);
+  };
+  let list = document.getElementById('list');
+
+  window.recv = {
+    add: function (text) {
+      alert(text)
+      let entry = e('li');
+      let name = e('span');
+      let rem = e('button');
+
+      name.textContent = text;
+      name.className = 'name';
+      name.onclick = function () {
+        let i = Array.from(list.children).indexOf(entry);
+        window.tether('toggle-complete:' + i);
+      };
+
+      rem.textContent = '❌';
+      rem.onclick = function () {
+        let i = Array.from(list.children).indexOf(entry);
+        window.tether('remove:' + i);
+      };
+
+      entry.appendChild(name);
+      entry.appendChild(rem);
+      list.appendChild(entry);
+    },
+    remove: function (i) {
+      alert(i)
+      list.removeChild(list.children[i]);
+    },
+    complete: function (i) {
+      list.children[i].classList.add('done');
+    },
+    uncomplete: function (i) {
+      list.children[i].classList.remove('done');
+    },
+  };
+
+  function add() {
+    let input = document.getElementById('newItem');
+    window.tether('add:' + input.value);
+    input.value = '';
+  }
+
+  function clearCompleted() {
+    window.tether('remove-completed:');
+  }
+</script>
+
+<style>
+  /* Body */
+
+  body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  /* Task List */
+
+  #list {
+    flex-grow: 1;
+    padding: 0;
+    list-style-type: none;
+    margin: 0;
+  }
+
+  li {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .name {
+    flex-grow: 1;
+  }
+
+  li:nth-child(odd) {
+    background-color: #EEE;
+  }
+
+  .done {
+    color: darkgray;
+    text-decoration: line-through;
+  }
+
+  /* Header + Footer */
+
+  header,
+  footer {
+    color: white;
+    background-color: tomato;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  h1 {
+    margin-right: auto;
+  }
+</style>

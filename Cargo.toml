@@ -1,0 +1,10 @@
+[package]
+name = "tether-project"
+version = "0.1.0"
+authors = ["Majedul Hoque <rumanbsl@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serde_derive="*"
+serde_json="*"
+web-view="*"
