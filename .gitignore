@@ -1,2 +1,6 @@
-/target
-**/*.rs.bk
+node_modules
+*.cache
+vue/dist
+vue/node_modules
+target
+node_modules

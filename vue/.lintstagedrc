@@ -1,0 +1,8 @@
+{
+  "*.{vue,ts,json,md,js}": ["yarn prettier", "git add"],
+  "*.{ts}": "yarn tslint:fix",
+  "*.{vue,scss}": [
+    "yarn stylelint",
+    "git add"
+  ]
+}

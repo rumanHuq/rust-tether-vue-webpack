@@ -1,0 +1,30 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.container {
+  box-shadow: 0 0 1px 1px #fff;
+  height: 96vh;
+  margin: 2vh auto;
+  overflow: hidden;
+  width: 96vw;
+}
+
+.aside {
+  width: 200px;
+}
+
+.content {
+  display: block;
+
+  &-header {
+    background-color: #fff;
+    color: #333;
+    font-size: 12px;
+    line-height: 60px;
+    max-height: 55.5px;
+    text-align: right;
+  }
+}

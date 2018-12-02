@@ -1,79 +1,105 @@
-//#![windows_subsystem = "windows"]
+#![windows_subsystem = "windows"]
 
-extern crate web_view;
+//! A pretty silly task list example.
+//!
+//! Note that the name isn't actually used, because the app doesn't do anything
+//! interesting with the data. An interesting extension would be to save the
+//! list to a file on `suspend`, and I'm sure that you have ideas that are even
+//! more interesting!
 
-use std::{
-    sync::{Arc, Mutex},
-    thread,
-    time::Duration,
-};
-use web_view::*;
+extern crate tether;
+
+use std::fmt::Write;
+use tether::{Handler, Window};
+
+fn inline_script(s: &str) -> String {
+  format!(r#"<script type="text/javascript">{}</script>"#, s)
+}
 
 fn main() {
-    let counter = Arc::new(Mutex::new(0));
-    let counter_inner = counter.clone();
-    let webview = web_view::builder()
-        .title("Timer example")
-        .content(Content::Html(HTML))
-        .size(800, 600)
-        .resizable(true)
-        .debug(true)
-        .user_data(0)
-        .invoke_handler(|webview, arg| {
-            match arg {
-                "reset" => {
-                    *webview.user_data_mut() += 10;
-                    let mut counter = counter.lock().unwrap();
-                    *counter = 0;
-                    render(webview, *counter)?;
-                }
-                "exit" => {
-                    webview.terminate();
-                }
-                _ => unimplemented!(),
-            };
-            Ok(())
-        })
-        .build()
-        .unwrap();
+  let html = format!(r#"
+		<!doctype html>
+		<html>
+			<head>
+			</head>
+			<body>
+        <div id="app"></div>
+				<!--[if lt IE 9]>
+				<div class="ie-upgrade-container">
+					<p class="ie-upgrade-message">Please, upgrade Internet Explorer to continue using this software.</p>
+					<a class="ie-upgrade-link" target="_blank" href="https://www.microsoft.com/en-us/download/internet-explorer.aspx">Upgrade</a>
+				</div>
+				<![endif]-->
+				<!--[if gte IE 9 | !IE ]> <!-->
+				{scripts}
+				<![endif]-->
+			</body>
+		</html>
+		"#,
+		scripts = inline_script(include_str!("static/main.js")),
+	);
+  tether::builder().html(&html).handler(App::new()).start();
+}
 
-    let handle = webview.handle();
-    thread::spawn(move || loop {
-        {
-            let mut counter = counter_inner.lock().unwrap();
-            *counter += 1;
-            let count = *counter;
-            handle
-                .dispatch(move |webview| {
-                    *webview.user_data_mut() -= 1;
-                    render(webview, count)
-                })
-                .unwrap();
+struct App {
+  tasks: Vec<Task>,
+}
+
+impl App {
+  fn new() -> Self {
+    Self { tasks: Vec::new() }
+  }
+}
+
+impl Handler for App {
+  fn message(&mut self, win: Window, msg: &str) {
+    let colon = msg.find(':').unwrap();
+
+    match &msg[..colon] {
+      "add" => {
+        let name = &msg[colon + 1..];
+        self.tasks.push(Task {
+          name: name.into(),
+          done: false,
+        });
+        win.eval(&format!("recv.add({})", tether::escape(name)));
+      }
+      "toggle-complete" => {
+        let i: usize = msg[colon + 1..].parse().unwrap();
+        let task = &mut self.tasks[i];
+        if task.done {
+          task.done = false;
+          win.eval(&format!("recv.uncomplete({})", i));
+        } else {
+          task.done = true;
+          win.eval(&format!("recv.complete({})", i));
         }
-        thread::sleep(Duration::from_secs(1));
-    });
+      }
+      "remove" => {
+        let i: usize = msg[colon + 1..].parse().unwrap();
+        self.tasks.remove(i);
+        win.eval(&format!("recv.remove({})", i));
+      }
+      "remove-completed" => {
+        let mut cmd = "[".to_owned();
 
-    webview.run().unwrap();
+        for i in (0..self.tasks.len()).rev() {
+          if self.tasks[i].done {
+            self.tasks.remove(i);
+            write!(cmd, "{},", i).unwrap();
+          }
+        }
+
+        cmd.push_str("].forEach(i => { recv.remove(i) })");
+        win.eval(&cmd);
+      }
+      _ => panic!("Unknown command."),
+    }
+  }
 }
 
-fn render(webview: &mut WebView<i32>, counter: u32) -> WVResult {
-    let user_data = *webview.user_data();
-    println!("counter: {}, userdata: {}", counter, user_data);
-    webview.eval(&format!("updateTicks({}, {})", counter, user_data))
+#[allow(dead_code)]
+struct Task {
+  name: String,
+  done: bool,
 }
-
-const HTML: &str = r#"
-<!doctype html>
-<html>
-	<body>
-		<p id="ticks"></p>
-		<button onclick="external.invoke('reset')">reset</button>
-		<button onclick="external.invoke('exit')">exit</button>
-		<script type="text/javascript">
-			function updateTicks(n, u) {
-				document.getElementById('ticks').innerHTML = 'ticks ' + n + '<br>' + 'userdata ' + u;
-			}
-		</script>
-	</body>
-</html>
-"#;

@@ -1,0 +1,20 @@
+{
+  "processors": ["@mapbox/stylelint-processor-arbitrary-tags"],
+  "extends": [
+    "stylelint-config-sass-guidelines",
+    "stylelint-config-lost",
+    "stylelint-config-standard"
+  ],
+  "syntax": "scss",
+  "rules": {
+    "at-rule-no-unknown": null,
+    "scss/at-rule-no-unknown": true,
+    "no-empty-source": null,
+    "selector-type-no-unknown": null,
+    "string-quotes": "double",
+    "order/order": null,
+    "selector-pseudo-element-colon-notation": null,
+    "max-nesting-depth": 3,
+    "selector-class-pattern": null
+  }
+}
