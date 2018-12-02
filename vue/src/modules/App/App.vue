@@ -1,5 +1,5 @@
 <template>
-  <div>{{ msg }}</div>
+  <div>{{ msg }} <button @click="sendToRust">click</button></div>
 </template>
 
 <script lang="js">
@@ -10,6 +10,6 @@ export default App;
 <style lang="scss" scoped>
 div {
   color: #008080;
-  text-align: right;
+  text-align: center;
 }
 </style>
