@@ -3,7 +3,8 @@
     "vue": "cd vue && yarn start",
     "watch": "npm-watch",
     "rust": "cargo watch -x run",
-    "start": "run-p vue rust"
+    "start": "run-p vue rust",
+    "prod": "cd vue && yarn prod"
   },
   "watch": {
     "vue": "{vue}/*.{js,vue,scss,ts}"

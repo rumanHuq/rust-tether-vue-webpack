@@ -13,14 +13,20 @@ use std::fmt::Write;
 use tether::{Handler, Window};
 
 fn inline_script(s: &str) -> String {
-  format!(r#"<script type="text/javascript">{}</script>"#, s)
+	format!(r#"<script type="text/javascript">{}</script>"#, s)
+}
+fn inline_style(s: &str) -> String {
+	format!(r#"<style type="text/css">{}</style>"#, s)
 }
 
 fn main() {
-  let html = format!(r#"
+	let html = format!(r#"
 		<!doctype html>
 		<html>
 			<head>
+			<meta charset="utf-8">
+  		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			{styles}
 			</head>
 			<body>
         <div id="app"></div>
@@ -36,29 +42,30 @@ fn main() {
 			</body>
 		</html>
 		"#,
+		styles = inline_style(include_str!("static/css/photon.css")),
 		scripts = inline_script(include_str!("static/main.js")),
 	);
-  tether::builder().html(&html).handler(App::new()).start();
+	tether::builder().html(&html).handler(App::new()).start();
 }
 
 struct App {
-  tasks: Vec<Task>,
+	tasks: Vec<Task>,
 }
 
 impl App {
-  fn new() -> Self {
-    Self { tasks: Vec::new() }
-  }
+	fn new() -> Self {
+		Self { tasks: Vec::new() }
+	}
 }
 
 impl Handler for App {
-  fn message(&mut self, win: Window, msg: &str) {
-    println!("{}", msg);
-  }
+	fn message(&mut self, win: Window, msg: &str) {
+		println!("{}", msg);
+	}
 }
 
 #[allow(dead_code)]
 struct Task {
-  name: String,
-  done: bool,
+	name: String,
+	done: bool,
 }

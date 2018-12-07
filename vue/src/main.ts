@@ -2,6 +2,8 @@ import ElementUI from "element-ui";
 import Vue from "vue";
 import VueI18n from "vue-i18n";
 import Vuex from "vuex";
+
+// import "./Assets/css/photon.css";
 import "./Assets/css/index.scss";
 
 import App from "./modules/App/App.vue";

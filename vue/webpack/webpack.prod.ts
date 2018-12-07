@@ -4,7 +4,6 @@
 
 import CompressionPlugin from "compression-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import UglifyJsPlugin from "uglifyjs-webpack-plugin";
 import { BundleAnalyzerPlugin, Configuration } from "webpack-bundle-analyzer";
 
 const plugins = [
@@ -22,19 +21,6 @@ if (process.env.SHOW_BUNDLE !== undefined) {
 }
 export default {
   mode: "production",
-  watch: true,
-  optimization: {
-    minimizer: [
-      new UglifyJsPlugin({
-        parallel: true,
-        sourceMap: true,
-        uglifyOptions: {
-          compress: { drop_console: true },
-          output: { comments: false },
-        },
-      }),
-    ],
-  },
   module: {
     rules: [
       {
