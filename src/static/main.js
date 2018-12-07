@@ -52726,7 +52726,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", [
     _vm._m(0),
-    _vm._v("\n  " + _vm._s(_vm.msg) + "\n  "),
+    _vm._v("\n  " + _vm._s(_vm.msg) + " "),
     _c("button", { on: { click: _vm.sendToRust } }, [_vm._v("click")])
   ])
 }
@@ -52763,7 +52763,7 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("button", { staticClass: "btn btn-default" }, [
           _c("span", { staticClass: "icon icon-home icon-text" }),
-          _vm._v("\n        Filters\n      ")
+          _vm._v(" Filters\n      ")
         ]),
         _vm._v(" "),
         _c(
